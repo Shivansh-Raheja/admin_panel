@@ -1,0 +1,129 @@
+.reviews-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+h2 {
+  text-align: center;
+  color: #ff6b00;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  background: #f8f8f8;
+}
+
+textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+button {
+  padding: 12px;
+  background: #ff6b00;
+  color: #131111;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #e65c00;
+}
+
+/* Reviews List */
+.reviews-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fffaf0;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  gap: 10px;
+}
+
+.review-card img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff6b00;
+}
+
+.review-card .review-content {
+  flex-grow: 1;
+}
+
+.review-card h3 {
+  font-size: 18px;
+  margin: 0;
+  color: #333;
+}
+
+.review-card p {
+  font-size: 14px;
+  margin: 5px 0 0;
+  color: #555;
+}
+
+/* Buttons */
+.review-card .actions {
+  display: flex;
+  gap: 10px;
+}
+
+.review-card button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+  transition: color 0.3s;
+}
+
+.review-card button:hover {
+  color: #ff6b00;
+}
+
+.review-card .edit-btn {
+  color: #007bff;
+}
+
+.review-card .edit-btn:hover {
+  color: #0056b3;
+}
+
+.review-card .delete-btn {
+  color: #dc3545;
+}
+
+.review-card .delete-btn:hover {
+  color: #a71d2a;
+}

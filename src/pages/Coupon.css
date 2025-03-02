@@ -1,0 +1,47 @@
+.containerr {
+    max-width: 90%;
+    margin: auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .add-button {
+    background-color: #ff6b00;
+    border: none;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .add-button:hover {
+    background-color: #e65c00;
+  }
+  
+  .coupons-table {
+    text-align: center;
+  }
+  
+  .public {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .private {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .modal-title {
+    color: #ff6b00;
+  }
+  
+  .modal-footer button {
+    font-weight: bold;
+  }
+  
