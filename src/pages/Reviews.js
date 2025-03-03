@@ -15,7 +15,7 @@ const Reviews = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get("https://13.233.119.140/admin_api/reviews.php");
+      const response = await axios.get("http://localhost/admin_api/reviews.php");
       if (response.data.success) {
         setReviews(response.data.reviews);
       }

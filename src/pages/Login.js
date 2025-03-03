@@ -13,7 +13,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://13.233.119.140/admin_api/login.php", { email, password });
+      const response = await axios.post("http://localhost/admin_api/login.php", { email, password });
       if (response.data.success) {
         localStorage.setItem("adminToken", response.data.token);
         localStorage.setItem("adminName", response.data.name);

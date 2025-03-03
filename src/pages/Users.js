@@ -17,7 +17,7 @@ const Users = () => {
   // Fetch Users
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("https://13.233.119.140/admin_api/users.php");
+      const response = await axios.get("http://localhost/admin_api/users.php");
       if (response.data.success) {
         setUsers(response.data.users);
       }
@@ -35,7 +35,7 @@ const Users = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://13.233.119.140/admin_api/users.php", formData);
+      const response = await axios.post("http://localhost/admin_api/users.php", formData);
       if (response.data.success) {
         Swal.fire("Success", response.data.message, "success");
         setShowModal(false);
