@@ -61,7 +61,7 @@ const Users = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://localhost/admin_api/users.php?id=${id}`);
+        await axios.delete(`https://65.0.109.136/admin_api/users.php?id=${id}`);
         Swal.fire("Deleted!", "User has been deleted.", "success");
         fetchUsers();
       } catch (error) {
