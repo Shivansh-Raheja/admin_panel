@@ -35,7 +35,7 @@ const Users = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost/admin_api/users.php", formData);
+      const response = await axios.post("https://65.0.109.136/admin_api/users.php", formData);
       if (response.data.success) {
         Swal.fire("Success", response.data.message, "success");
         setShowModal(false);
