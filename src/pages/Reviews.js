@@ -15,7 +15,7 @@ const Reviews = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get("http://localhost/admin_api/reviews.php");
+      const response = await axios.get("https://65.0.109.136/admin_api/reviews.php");
       if (response.data.success) {
         setReviews(response.data.reviews);
       }
@@ -40,11 +40,11 @@ const Reviews = () => {
     try {
       if (editingId) {
         form.append("id", editingId);
-        await axios.put("http://localhost/admin_api/reviews.php", form, {
+        await axios.put("https://65.0.109.136/admin_api/reviews.php", form, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        await axios.post("http://localhost/admin_api/reviews.php", form, {
+        await axios.post("https://65.0.109.136/admin_api/reviews.php", form, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
@@ -73,7 +73,7 @@ const Reviews = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete("http://localhost/admin_api/reviews.php", { data: { id } });
+        await axios.delete("https://65.0.109.136/admin_api/reviews.php", { data: { id } });
         Swal.fire("Deleted!", "Review has been deleted.", "success").then(() => {
           window.location.reload();
         });
@@ -96,7 +96,7 @@ const Reviews = () => {
       <div className="reviews-list">
         {reviews.map((review) => (
           <div key={review.id} className="review-card">
-            <img src={`http://localhost/admin_api/${review.image}`} alt={review.name} />
+            <img src={`https://65.0.109.136/admin_api/${review.image}`} alt={review.name} />
             <div className="review-content">
               <h3>{review.name}</h3>
               <p>{review.review}</p>
