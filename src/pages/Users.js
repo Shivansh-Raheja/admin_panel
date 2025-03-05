@@ -17,7 +17,7 @@ const Users = () => {
   // Fetch Users
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost/admin_api/users.php");
+      const response = await axios.get("https://65.0.109.136/admin_api/users.php");
       if (response.data.success) {
         setUsers(response.data.users);
       }
