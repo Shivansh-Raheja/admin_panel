@@ -13,7 +13,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://65.0.109.136/admin_api/login.php", { email, password });
+      const response = await axios.post("https://api.magnumwonderplast.com/admin_api/login.php", { email, password });
       if (response.data.success) {
         localStorage.setItem("adminToken", response.data.token);
         localStorage.setItem("adminName", response.data.name);
