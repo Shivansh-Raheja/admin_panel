@@ -16,7 +16,7 @@ const Brochure = () => {
 
     const fetchBrochures = async () => {
         try {
-            const response = await axios.get("http://localhost/admin_api/brochure.php");
+            const response = await axios.get("https://65.0.109.136/admin_api/brochure.php");
             if (response.data.success) {
                 setBrochures(response.data.brochures);
             }
@@ -42,10 +42,10 @@ const Brochure = () => {
         try {
             if (editMode) {
                 form.append("id", formData.id);
-                await axios.post("http://localhost/admin_api/brochure.php?_method=PUT", form);
+                await axios.post("https://65.0.109.136/admin_api/brochure.php?_method=PUT", form);
                 Swal.fire("Success!", "Brochure updated successfully.", "success");
             } else {
-                await axios.post("http://localhost/admin_api/brochure.php", form);
+                await axios.post("https://65.0.109.136/admin_api/brochure.php", form);
                 Swal.fire("Success!", "Brochure added successfully.", "success");
             }
             fetchBrochures();
@@ -74,7 +74,7 @@ const Brochure = () => {
 
         if (confirm.isConfirmed) {
             try {
-                await axios.delete("http://localhost/admin_api/brochure.php", {
+                await axios.delete("https://65.0.109.136/admin_api/brochure.php", {
                     data: { id },
                 });
                 Swal.fire("Deleted!", "Brochure has been deleted.", "success");
@@ -114,7 +114,7 @@ const Brochure = () => {
                             <td>{brochure.id}</td>
                             <td>{brochure.title}</td>
                             <td>
-                                <a href={`http://localhost/admin_api/${brochure.file_path}`} target="_blank" rel="noopener noreferrer">
+                                <a href={`https://65.0.109.136/admin_api/${brochure.file_path}`} target="_blank" rel="noopener noreferrer">
                                     View File
                                 </a>
                             </td>

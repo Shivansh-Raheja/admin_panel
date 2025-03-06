@@ -21,7 +21,7 @@ const Banners = () => {
 
   const fetchBanners = async () => {
     try {
-      const response = await axios.get("http://localhost/admin_api/banners.php");
+      const response = await axios.get("https://65.0.109.136/admin_api/banners.php");
       setBanners(response.data);
     } catch (error) {
       console.error("Error fetching banners:", error);
@@ -57,10 +57,10 @@ const Banners = () => {
 
       if (editing) {
         formDataToSend.append("id", formData.id);
-        await axios.put("http://localhost/admin_api/banners.php", formDataToSend);
+        await axios.put("https://65.0.109.136/admin_api/banners.php", formDataToSend);
         Swal.fire("Updated!", "Banner updated successfully.", "success");
       } else {
-        await axios.post("http://localhost/admin_api/banners.php", formDataToSend);
+        await axios.post("https://65.0.109.136/admin_api/banners.php", formDataToSend);
         Swal.fire("Added!", "Banner added successfully.", "success");
       }
       
@@ -90,7 +90,7 @@ const Banners = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost/admin_api/banners.php`, { data: { id } });
+          await axios.delete(`https://65.0.109.136/admin_api/banners.php`, { data: { id } });
           fetchBanners();
           Swal.fire("Deleted!", "Your banner has been deleted.", "success");
         } catch (error) {
@@ -121,7 +121,7 @@ const Banners = () => {
               <td>{banner.id}</td>
               <td>{banner.title}</td>
               <td>
-                {banner.image && <img src={`http://localhost/admin_api/${banner.image}`} alt="Banner" className="banner-img" />}
+                {banner.image && <img src={`https://65.0.109.136/admin_api/${banner.image}`} alt="Banner" className="banner-img" />}
               </td>
               <td>{banner.visible_status === "0" ? "Visible" : "Hidden"}</td>
               <td>

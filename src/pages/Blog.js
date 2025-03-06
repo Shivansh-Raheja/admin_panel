@@ -19,7 +19,7 @@ const Blog = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
 
-  const API_URL = "http://localhost/admin_api/blog.php";
+  const API_URL = "https://65.0.109.136/admin_api/blog.php";
 
   // Fetch all blogs
   const fetchBlogs = async () => {
@@ -166,11 +166,11 @@ const Blog = () => {
                 <td>{blog.title}</td>
                 <td>{blog.author_name}</td>
                 <td>
-                  <img src={`http://localhost/admin_api/${blog.author_image}`} alt="Author" className="small-img" />
+                  <img src={`https://65.0.109.136/admin_api/${blog.author_image}`} alt="Author" className="small-img" />
                 </td>
                 <td>{blog.short_description}</td>
                 <td>
-                  <img src={`http://localhost/admin_api/${blog.blog_image}`} alt="Blog" className="small-img" />
+                  <img src={`https://65.0.109.136/admin_api/${blog.blog_image}`} alt="Blog" className="small-img" />
                 </td>
                 <td>
                   <Button variant="warning" size="sm" onClick={() => handleShowModal(blog)}>
