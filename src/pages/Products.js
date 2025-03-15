@@ -32,9 +32,11 @@ const Products = () => {
   
       if (Array.isArray(response.data)) {
         setProducts(response.data);
+      } else if (typeof response.data === "object" && response.data !== null) {
+        setProducts([response.data]); // Wrap object inside an array
       } else {
         console.error("Unexpected response format:", response.data);
-        setProducts([]); // Prevent crashes by setting an empty array
+        setProducts([]);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
