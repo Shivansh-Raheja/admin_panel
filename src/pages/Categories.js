@@ -15,15 +15,16 @@ const Categories = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get("https://api.magnumwonderplast.com/admin_api/categories.php");
-      if (Array.isArray(response.data)) {
-        setCategories(response.data);
+      
+      if (response.data.success && Array.isArray(response.data.categories)) {
+        setCategories(response.data.categories);
       } else {
         console.error("Unexpected response format:", response.data);
-        setCategories([]); // Set to an empty array to prevent errors
+        setCategories([]); // Prevent errors by setting it to an empty array
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
-      setCategories([]); // Prevent `map` errors in case of failure
+      setCategories([]);
     }
   };
   
