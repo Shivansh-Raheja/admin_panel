@@ -38,12 +38,19 @@ const Products = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get("https://api.magnumwonderplast.com/admin_api/categories.php");
-      setCategories(response.data);
+      
+      if (response.data.success && Array.isArray(response.data.categories)) {
+        setCategories(response.data.categories);
+      } else {
+        console.error("Unexpected response format:", response.data);
+        setCategories([]); // Prevent errors by setting it to an empty array
+      }
     } catch (error) {
       console.error("Error fetching categories:", error);
+      setCategories([]);
     }
   };
-
+  
   const handleShow = (product = null) => {
     if (product) {
       setEditingProduct(product);
