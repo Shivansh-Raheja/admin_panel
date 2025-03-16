@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -35,11 +36,26 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             <div className="input-group">
               <FaUser className="icon" />
-              <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
             <div className="input-group">
               <FaLock className="icon" />
-              <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
             <button type="submit" className="btn-login">Login</button>
           </form>
