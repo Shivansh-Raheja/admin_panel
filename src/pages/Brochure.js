@@ -8,7 +8,7 @@ const Brochure = () => {
     const [brochures, setBrochures] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editMode, setEditMode] = useState(false);
-    const [formData, setFormData] = useState({ id: "", title: "", file: null });
+    const [formData, setFormData] = useState({ id: "", title: "", file: null, type: "" });
 
     useEffect(() => {
         fetchBrochures();
@@ -37,6 +37,7 @@ const Brochure = () => {
         e.preventDefault();
         const form = new FormData();
         form.append("title", formData.title);
+        form.append("type", formData.type);
         if (formData.file) form.append("file", formData.file);
 
         try {
@@ -57,7 +58,7 @@ const Brochure = () => {
     };
 
     const handleEdit = (brochure) => {
-        setFormData({ id: brochure.id, title: brochure.title, file: null });
+        setFormData({ id: brochure.id, title: brochure.title, file: null, type: brochure.type });
         setEditMode(true);
         setShowModal(true);
     };
@@ -78,7 +79,7 @@ const Brochure = () => {
                     data: { id },
                 });
                 Swal.fire("Deleted!", "Brochure has been deleted.", "success");
-                window.location.reload();
+                fetchBrochures();
             } catch (error) {
                 Swal.fire("Error!", "Failed to delete brochure.", "error");
                 console.error("Error deleting brochure:", error);
@@ -89,7 +90,7 @@ const Brochure = () => {
     const handleClose = () => {
         setShowModal(false);
         setEditMode(false);
-        setFormData({ id: "", title: "", file: null });
+        setFormData({ id: "", title: "", file: null, type: "" });
     };
 
     return (
@@ -104,6 +105,7 @@ const Brochure = () => {
                     <tr>
                         <th>ID</th>
                         <th>Title</th>
+                        <th>Type</th>
                         <th>File</th>
                         <th>Actions</th>
                     </tr>
@@ -113,6 +115,7 @@ const Brochure = () => {
                         <tr key={brochure.id}>
                             <td>{brochure.id}</td>
                             <td>{brochure.title}</td>
+                            <td>{brochure.type || "N/A"}</td>
                             <td>
                                 <a href={`https://api.magnumwonderplast.com/admin_api/${brochure.file_path}`} target="_blank" rel="noopener noreferrer">
                                     View File
@@ -140,6 +143,16 @@ const Brochure = () => {
                         <Form.Group>
                             <Form.Label>Title</Form.Label>
                             <Form.Control type="text" name="title" value={formData.title} onChange={handleChange} required />
+                        </Form.Group>
+
+                        <Form.Group className="mt-2">
+                            <Form.Label>Type</Form.Label>
+                            <Form.Select name="type" value={formData.type} onChange={handleChange} required>
+                                <option value="">Select Type</option>
+                                <option value="main">Main</option>
+                                <option value="kids">Kids</option>
+                                <option value="trifold">Trifold</option>
+                            </Form.Select>
                         </Form.Group>
 
                         <Form.Group className="mt-2">
