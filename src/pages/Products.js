@@ -28,7 +28,7 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("https://api.magnumwonderplast.com/admin_api/products.php");
+      const response = await axios.get("http://api.magnumwonderplast.com/admin_api/products.php");
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -37,7 +37,7 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://api.magnumwonderplast.com/admin_api/categories.php");
+      const response = await axios.get("http://api.magnumwonderplast.com/admin_api/categories.php");
       
       if (response.data.success && Array.isArray(response.data.categories)) {
         setCategories(response.data.categories);
@@ -119,7 +119,7 @@ const Products = () => {
     }
 
     try {
-      await axios.post("https://api.magnumwonderplast.com/admin_api/products.php", productData, {
+      await axios.post("http://api.magnumwonderplast.com/admin_api/products.php", productData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       Swal.fire("Success!", "Product added successfully.", "success");
@@ -143,7 +143,7 @@ const Products = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete("https://api.magnumwonderplast.com/admin_api/products.php", { data: { id } });
+          await axios.delete("http://api.magnumwonderplast.com/admin_api/products.php", { data: { id } });
           Swal.fire("Deleted!", "The product has been removed.", "success");
           fetchProducts();
         } catch (error) {
@@ -180,7 +180,7 @@ const Products = () => {
               <td>
                 {product.images && product.images.length > 0 && (
                   <img
-                    src={`https://api.magnumwonderplast.com/admin_api/${product.images[0]}`}
+                    src={`http://api.magnumwonderplast.com/admin_api/${product.images[0]}`}
                     alt="Product"
                     className="product-image"
                     style={{ width: "50px", height: "50px" }}
