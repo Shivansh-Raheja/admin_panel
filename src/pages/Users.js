@@ -35,7 +35,7 @@ const Users = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://api.magnumwonderplast.com/admin_api/users.php", formData);
+      const response = await axios.post("http://api.magnumwonderplast.com/admin_api/users.php", formData);
       if (response.data.success) {
         Swal.fire("Success", response.data.message, "success");
         setShowModal(false);
@@ -61,7 +61,7 @@ const Users = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`https://api.magnumwonderplast.com/admin_api/users.php?id=${id}`);
+        await axios.delete(`http://api.magnumwonderplast.com/admin_api/users.php?id=${id}`);
         Swal.fire("Deleted!", "User has been deleted.", "success");
         fetchUsers();
       } catch (error) {
