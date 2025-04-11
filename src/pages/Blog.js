@@ -91,7 +91,7 @@ const Blog = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(API_URL + `?id=${id}`);
+          await axios.delete(`http://api.magnumwonderplast.com/admin_api/blog.php?id=${id}`);
           Swal.fire("Deleted!", "The blog has been deleted.", "success");
           window.location.reload();
         } catch (error) {
