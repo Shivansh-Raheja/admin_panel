@@ -93,7 +93,7 @@ const Blog = () => {
         try {
           await axios.delete(`http://api.magnumwonderplast.com/admin_api/blog.php?id=${id}`);
           Swal.fire("Deleted!", "The blog has been deleted.", "success");
-          window.location.reload();
+          fetchBlogs();
         } catch (error) {
           Swal.fire("Error", "Failed to delete blog", "error");
         }

@@ -5,9 +5,10 @@
   height: 100vh;
   width: 100%;
   font-family: 'Poppins', sans-serif;
+  overflow: hidden; /* Prevent overall page scrolling */
 }
 
-/* Sidebar */
+/* Sidebar - Fixed with independent scrolling */
 .sidebar {
   width: 250px;
   background: #ff6b00;
@@ -15,18 +16,28 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
+  height: 100vh; /* Full viewport height */
+  position: fixed; /* Fix position */
+  left: 0;
+  top: 0;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  overflow-y: auto; /* Enable scrolling only for sidebar if needed */
 }
 
 .sidebar h2 {
   margin-bottom: 30px;
+  position: sticky;
+  top: 0;
+  background: #ff6b00;
+  padding-bottom: 10px;
+  z-index: 1;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
+  margin: 0;
+  flex-grow: 1;
 }
 
 .sidebar ul li {
@@ -48,17 +59,24 @@
 }
 
 .logout {
-  margin-top: auto;
-  color: #fff;
+  position: sticky;
+  bottom: 0;
+  background: #ff6b00;
+  padding-top: 10px;
 }
 
-/* Main Content */
+/* Main Content - Scrollable area */
 .dashboard-main {
   flex: 1;
   padding: 40px;
-  text-align: center;
+  margin-left: 250px; /* Match sidebar width */
   background-color: #f9f9f9;
+  overflow-y: auto; /* Enable scrolling for main content */
+  height: 100vh;
+  text-align: center;
 }
+
+/* Rest of your existing styles... */
 
 h1 {
   color: #ff6b00;
