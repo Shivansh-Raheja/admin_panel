@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button, Form, Table } from "react-bootstrap";
+import { Modal, Button, Form, Table, Row, Col, Badge } from "react-bootstrap";
 import Swal from "sweetalert2";
 
 const Products = () => {
@@ -17,8 +17,11 @@ const Products = () => {
     features: "",
     description: "",
     product_reviews: "",
+    youtube_video_link: "",
+    colors: [],
     images: [],
     image_3d: null,
+    description_images: []
   });
 
   useEffect(() => {
@@ -38,19 +41,18 @@ const Products = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get("http://api.magnumwonderplast.com/admin_api/categories.php");
-      
       if (response.data.success && Array.isArray(response.data.categories)) {
         setCategories(response.data.categories);
       } else {
         console.error("Unexpected response format:", response.data);
-        setCategories([]); // Prevent errors by setting it to an empty array
+        setCategories([]);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
       setCategories([]);
     }
   };
-  
+
   const handleShow = (product = null) => {
     if (product) {
       setEditingProduct(product);
@@ -63,8 +65,11 @@ const Products = () => {
         features: product.features,
         description: product.description,
         product_reviews: product.product_reviews || "",
+        youtube_video_link: product.youtube_video_link || "",
+        colors: product.colors ? JSON.parse(product.colors) : [],
         images: [],
         image_3d: null,
+        description_images: []
       });
     } else {
       setEditingProduct(null);
@@ -77,8 +82,11 @@ const Products = () => {
         features: "",
         description: "",
         product_reviews: "",
+        youtube_video_link: "",
+        colors: [],
         images: [],
         image_3d: null,
+        description_images: []
       });
     }
     setShow(true);
@@ -93,8 +101,27 @@ const Products = () => {
     setFormData({ ...formData, images: Array.from(e.target.files) });
   };
 
+  const handleDescImagesChange = (e) => {
+    setFormData({ ...formData, description_images: Array.from(e.target.files) });
+  };
+
   const handle3DFileChange = (e) => {
     setFormData({ ...formData, image_3d: e.target.files[0] });
+  };
+
+  const handleColorChange = (e, index) => {
+    const newColors = [...formData.colors];
+    newColors[index] = e.target.value;
+    setFormData({ ...formData, colors: newColors });
+  };
+
+  const addColorField = () => {
+    setFormData({ ...formData, colors: [...formData.colors, ""] });
+  };
+
+  const removeColorField = (index) => {
+    const newColors = formData.colors.filter((_, i) => i !== index);
+    setFormData({ ...formData, colors: newColors });
   };
 
   const handleSubmit = async (e) => {
@@ -109,9 +136,16 @@ const Products = () => {
     productData.append("features", formData.features);
     productData.append("description", formData.description);
     productData.append("product_reviews", formData.product_reviews);
+    productData.append("youtube_video_link", formData.youtube_video_link);
+    productData.append("colors", JSON.stringify(formData.colors));
 
     // Append images
     formData.images.forEach((file) => productData.append("images[]", file));
+    
+    // Append description images
+    formData.description_images.forEach((file) => 
+      productData.append("description_images[]", file)
+    );
 
     // Append 3D image if exists
     if (formData.image_3d) {
@@ -119,15 +153,25 @@ const Products = () => {
     }
 
     try {
-      await axios.post("http://api.magnumwonderplast.com/admin_api/products.php", productData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      Swal.fire("Success!", "Product added successfully.", "success");
+      const url = "http://api.magnumwonderplast.com/admin_api/products.php";
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" }
+      };
+
+      if (editingProduct) {
+        productData.append("id", editingProduct.id);
+        await axios.put(url, productData, config);
+        Swal.fire("Success!", "Product updated successfully.", "success");
+      } else {
+        await axios.post(url, productData, config);
+        Swal.fire("Success!", "Product added successfully.", "success");
+      }
+      
       fetchProducts();
       handleClose();
     } catch (error) {
-      console.error("Error adding product:", error);
-      Swal.fire("Error!", "Failed to add product.", "error");
+      console.error("Error saving product:", error);
+      Swal.fire("Error!", error.response?.data?.message || "Failed to save product.", "error");
     }
   };
 
@@ -143,7 +187,9 @@ const Products = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete("http://api.magnumwonderplast.com/admin_api/products.php", { data: { id } });
+          await axios.delete("http://api.magnumwonderplast.com/admin_api/products.php", { 
+            data: { id } 
+          });
           Swal.fire("Deleted!", "The product has been removed.", "success");
           fetchProducts();
         } catch (error) {
@@ -153,51 +199,58 @@ const Products = () => {
     });
   };
 
+  const getImageUrl = (path) => {
+    if (!path) return '';
+    // Handle both string and array inputs
+    const imagePath = Array.isArray(path) ? path[0] : path;
+    // Normalize path and construct full URL
+    return `http://api.magnumwonderplast.com/admin_api/${imagePath.replace(/\\\//g, '/')}`;
+  };
+
   return (
     <div className="products-container">
       <h2>Manage Products</h2>
       <Button variant="primary" onClick={() => handleShow()}>Add Product</Button>
+      
       <Table striped bordered hover className="mt-3">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Image</th>
             <th>Name</th>
-            <th>Cost</th>
-            <th>MRP</th>
+            <th>Price</th>
             <th>Category</th>
-            <th>Short Desc.</th>
-            <th>Features</th>
-            <th>Description</th>
-            <th>Reviews</th>
+            <th>Colors</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {products.map((product) => (
             <tr key={product.id}>
-              <td>{product.id}</td>
               <td>
-                {product.images && product.images.length > 0 && (
-                  <img
-                    src={`http://api.magnumwonderplast.com/admin_api/${product.images[0]}`}
-                    alt="Product"
-                    className="product-image"
-                    style={{ width: "50px", height: "50px" }}
-                  />
-                )}
+                <div className="d-flex align-items-center">
+                  <div>
+                    <strong>{product.name}</strong>
+                  </div>
+                </div>
               </td>
-              <td>{product.name}</td>
-              <td>${product.cost}</td>
-              <td>${product.mrp}</td>
-              <td>{product.category_name}</td>
-              <td>{product.short_description}</td>
-              <td>{product.features}</td>
-              <td>{product.description}</td>
-              <td>{product.product_reviews}</td>
               <td>
-                <Button variant="warning" size="sm" onClick={() => handleShow(product)}>Edit</Button>{" "}
-                <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>Delete</Button>
+                <div>Cost: ${product.cost}</div>
+                <div>MRP: ${product.mrp}</div>
+              </td>
+              <td>{product.category_name}</td>
+              <td>
+                {product.colors && JSON.parse(product.colors).map((color, index) => (
+                  <Badge key={index} className="me-1" bg="secondary">
+                    {color}
+                  </Badge>
+                ))}
+              </td>
+              <td>
+                <Button variant="warning" size="sm" onClick={() => handleShow(product)}>
+                  Edit
+                </Button>{' '}
+                <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
+                  Delete
+                </Button>
               </td>
             </tr>
           ))}
@@ -205,110 +258,227 @@ const Products = () => {
       </Table>
 
       {/* Add/Edit Product Modal */}
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{editingProduct ? "Edit Product" : "Add Product"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-  <Form.Group>
-    <Form.Label>Name</Form.Label>
-    <Form.Control
-      type="text"
-      value={formData.name}
-      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-      required
-    />
-  </Form.Group>
+          <Form onSubmit={handleSubmit}>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Name*</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </Form.Group>
 
-  <Form.Group>
-    <Form.Label>Short Description</Form.Label>
-    <Form.Control
-      type="text"
-      value={formData.short_description}
-      onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-      required
-    />
-  </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Short Description*</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={formData.short_description}
+                    onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
+                    required
+                  />
+                </Form.Group>
 
-  <Form.Group>
-    <Form.Label>Features</Form.Label>
-    <Form.Control
-      as="textarea"
-      rows={3}
-      value={formData.features}
-      onChange={(e) => setFormData({ ...formData, features: e.target.value })}
-    />
-  </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Features</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={formData.features}
+                    onChange={(e) => setFormData({ ...formData, features: e.target.value })}
+                  />
+                </Form.Group>
 
-  <Form.Group>
-    <Form.Label>Description</Form.Label>
-    <Form.Control
-      as="textarea"
-      rows={4}
-      value={formData.description}
-      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-      required
-    />
-  </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Description*</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={4}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    required
+                  />
+                </Form.Group>
+              </Col>
 
-  <Form.Group>
-    <Form.Label>Cost</Form.Label>
-    <Form.Control
-      type="number"
-      value={formData.cost}
-      onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-      required
-    />
-  </Form.Group>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Cost*</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    value={formData.cost}
+                    onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+                    required
+                  />
+                </Form.Group>
 
-  <Form.Group>
-    <Form.Label>MRP</Form.Label>
-    <Form.Control
-      type="number"
-      value={formData.mrp}
-      onChange={(e) => setFormData({ ...formData, mrp: e.target.value })}
-      required
-    />
-  </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>MRP*</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    value={formData.mrp}
+                    onChange={(e) => setFormData({ ...formData, mrp: e.target.value })}
+                    required
+                  />
+                </Form.Group>
 
-  <Form.Group>
-    <Form.Label>Category</Form.Label>
-    <Form.Select
-      value={formData.category_id}
-      onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-      required
-    >
-      <option value="">Select Category</option>
-      {categories.map((cat) => (
-        <option key={cat.id} value={cat.id}>
-          {cat.title}
-        </option>
+                <Form.Group className="mb-3">
+                  <Form.Label>Category*</Form.Label>
+                  <Form.Select
+                    value={formData.category_id}
+                    onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.title}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Product Reviews</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={formData.product_reviews}
+                    onChange={(e) => setFormData({ ...formData, product_reviews: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>YouTube Video Link</Form.Label>
+                  <Form.Control
+                    type="url"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    value={formData.youtube_video_link}
+                    onChange={(e) => setFormData({ ...formData, youtube_video_link: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Colors (Max 4 colors)</Form.Label>
+                  {formData.colors.map((color, index) => (
+                    <div key={index} className="d-flex mb-2">
+                      <Form.Control
+                        type="text"
+                        value={color}
+                        onChange={(e) => handleColorChange(e, index)}
+                        placeholder="Color name or hex code"
+                      />
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="ms-2"
+                        onClick={() => removeColorField(index)}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                  <Button variant="outline-secondary" size="sm" onClick={addColorField}>
+                    + Add Color
+                  </Button>
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Main Images* (Upto 5)</Form.Label>
+                  <Form.Control
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  {editingProduct && editingProduct.images && (
+  <div className="mt-2">
+    <small>Current Images:</small>
+    <div className="d-flex flex-wrap gap-2 mt-1">
+      {editingProduct.images.map((img, i) => (
+        <img
+          key={i}
+          src={getImageUrl(img)}
+          alt={`Product ${i}`}
+          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
+        />
       ))}
-    </Form.Select>
-  </Form.Group>
+    </div>
+  </div>
+)}
+                </Form.Group>
+              </Col>
 
-  <Form.Group>
-    <Form.Label>Product Reviews</Form.Label>
-    <Form.Control
-      as="textarea"
-      rows={2}
-      value={formData.product_reviews}
-      onChange={(e) => setFormData({ ...formData, product_reviews: e.target.value })}
-    />
-  </Form.Group>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Description Images (Max 4 Images)</Form.Label>
+                  <Form.Control
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleDescImagesChange}
+                  />
+                  {editingProduct && editingProduct.description_images && (
+  <div className="mt-2">
+    <small>Current Description Images:</small>
+    <div className="d-flex flex-wrap gap-2 mt-1">
+      {editingProduct.description_images.map((img, i) => (
+        <img
+          key={i}
+          src={getImageUrl(img)}
+          alt={`Desc ${i}`}
+          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
+        />
+      ))}
+    </div>
+  </div>
+)}
+                </Form.Group>
+              </Col>
+            </Row>
 
-  <Form.Group>
-    <Form.Label>Images (Max 8)</Form.Label>
-    <Form.Control type="file" multiple accept="image/*" onChange={handleFileChange} />
-  </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>3D Model (GLB/GLTF)</Form.Label>
+              <Form.Control
+                type="file"
+                accept=".glb,.gltf"
+                onChange={handle3DFileChange}
+              />
+              {editingProduct && editingProduct.image_3d && (
+                <div className="mt-2">
+                  <small>Current 3D Model:</small>
+                  <div>{editingProduct.image_3d}</div>
+                </div>
+              )}
+            </Form.Group>
 
-  <Form.Group>
-    <Form.Label>3D Image</Form.Label>
-    <Form.Control type="file" accept=".glb,.gltf" onChange={handle3DFileChange} />
-  </Form.Group>
-
-            <Button variant="primary" type="submit">Save</Button>
+            <div className="d-flex justify-content-end">
+              <Button variant="secondary" onClick={handleClose} className="me-2">
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit">
+                {editingProduct ? "Update" : "Save"} Product
+              </Button>
+            </div>
           </Form>
         </Modal.Body>
       </Modal>
