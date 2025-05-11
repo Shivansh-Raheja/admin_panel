@@ -13,6 +13,7 @@ const Products = () => {
     cost: "",
     mrp: "",
     category_id: "",
+    sku: "",
     short_description: "",
     features: "",
     description: "",
@@ -23,6 +24,22 @@ const Products = () => {
     image_3d: null,
     description_images: []
   });
+
+  // Helper function to safely parse JSON or return default value
+  const safeJsonParse = (str, defaultValue = []) => {
+    try {
+      if (typeof str === 'string') {
+        return JSON.parse(str);
+      }
+      if (Array.isArray(str)) {
+        return str;
+      }
+      return defaultValue;
+    } catch (e) {
+      console.error('JSON parse error:', e);
+      return defaultValue;
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -61,15 +78,20 @@ const Products = () => {
         cost: product.cost,
         mrp: product.mrp,
         category_id: product.category_id,
+        sku: product.sku || "",
         short_description: product.short_description,
         features: product.features,
         description: product.description,
         product_reviews: product.product_reviews || "",
         youtube_video_link: product.youtube_video_link || "",
-        colors: product.colors ? JSON.parse(product.colors) : [],
-        images: [],
-        image_3d: null,
-        description_images: []
+        colors: safeJsonParse(product.colors),
+        images: [], // This is for new files to upload
+        image_3d: null, // This is for new file to upload
+        description_images: [], // This is for new files to upload
+        // Add existing paths for display purposes
+        existing_images: safeJsonParse(product.images),
+        existing_description_images: safeJsonParse(product.description_images),
+        existing_image_3d: product.image_3d
       });
     } else {
       setEditingProduct(null);
@@ -78,6 +100,7 @@ const Products = () => {
         cost: "",
         mrp: "",
         category_id: "",
+        sku: "",
         short_description: "",
         features: "",
         description: "",
@@ -116,7 +139,9 @@ const Products = () => {
   };
 
   const addColorField = () => {
-    setFormData({ ...formData, colors: [...formData.colors, ""] });
+    if (formData.colors.length < 4) {
+      setFormData({ ...formData, colors: [...formData.colors, ""] });
+    }
   };
 
   const removeColorField = (index) => {
@@ -132,6 +157,7 @@ const Products = () => {
     productData.append("cost", formData.cost);
     productData.append("mrp", formData.mrp);
     productData.append("category_id", formData.category_id);
+    productData.append("sku", formData.sku);
     productData.append("short_description", formData.short_description);
     productData.append("features", formData.features);
     productData.append("description", formData.description);
@@ -159,8 +185,18 @@ const Products = () => {
       };
 
       if (editingProduct) {
+        if (formData.existing_images) {
+          productData.append("existing_images", JSON.stringify(formData.existing_images));
+        }
+        if (formData.existing_description_images) {
+          productData.append("existing_description_images", JSON.stringify(formData.existing_description_images));
+        }
+        if (formData.existing_image_3d) {
+          productData.append("existing_image_3d", formData.existing_image_3d);
+        }
+        productData.append("_method", "PUT");
         productData.append("id", editingProduct.id);
-        await axios.put(url, productData, config);
+        await axios.post(url, productData, config);
         Swal.fire("Success!", "Product updated successfully.", "success");
       } else {
         await axios.post(url, productData, config);
@@ -203,6 +239,8 @@ const Products = () => {
     if (!path) return '';
     // Handle both string and array inputs
     const imagePath = Array.isArray(path) ? path[0] : path;
+    // Check if imagePath exists and is a string before calling replace
+    if (typeof imagePath !== 'string') return '';
     // Normalize path and construct full URL
     return `http://api.magnumwonderplast.com/admin_api/${imagePath.replace(/\\\//g, '/')}`;
   };
@@ -216,6 +254,7 @@ const Products = () => {
         <thead>
           <tr>
             <th>Name</th>
+            <th>SKU</th>
             <th>Price</th>
             <th>Category</th>
             <th>Colors</th>
@@ -226,19 +265,18 @@ const Products = () => {
           {products.map((product) => (
             <tr key={product.id}>
               <td>
-                <div className="d-flex align-items-center">
-                  <div>
+                
                     <strong>{product.name}</strong>
-                  </div>
-                </div>
+                
               </td>
+              <td>{product.sku || '-'}</td>
               <td>
-                <div>Cost: ${product.cost}</div>
-                <div>MRP: ${product.mrp}</div>
+                <div>Cost: Rs.{product.cost}</div>
+                <div>MRP: Rs.{product.mrp}</div>
               </td>
               <td>{product.category_name}</td>
               <td>
-                {product.colors && JSON.parse(product.colors).map((color, index) => (
+                {safeJsonParse(product.colors).map((color, index) => (
                   <Badge key={index} className="me-1" bg="secondary">
                     {color}
                   </Badge>
@@ -273,6 +311,16 @@ const Products = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>SKU</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={formData.sku}
+                    onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                    placeholder="Product SKU or code"
                   />
                 </Form.Group>
 
@@ -387,9 +435,11 @@ const Products = () => {
                       </Button>
                     </div>
                   ))}
-                  <Button variant="outline-secondary" size="sm" onClick={addColorField}>
-                    + Add Color
-                  </Button>
+                  {formData.colors.length < 4 && (
+                    <Button variant="outline-secondary" size="sm" onClick={addColorField}>
+                      + Add Color
+                    </Button>
+                  )}
                 </Form.Group>
               </Col>
             </Row>
@@ -405,23 +455,23 @@ const Products = () => {
                     onChange={handleFileChange}
                   />
                   {editingProduct && editingProduct.images && (
-  <div className="mt-2">
-    <small>Current Images:</small>
-    <div className="d-flex flex-wrap gap-2 mt-1">
-      {editingProduct.images.map((img, i) => (
-        <img
-          key={i}
-          src={getImageUrl(img)}
-          alt={`Product ${i}`}
-          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
-        />
-      ))}
-    </div>
-  </div>
-)}
+                    <div className="mt-2">
+                      <small>Current Images:</small>
+                      <div className="d-flex flex-wrap gap-2 mt-1">
+                        {safeJsonParse(editingProduct.images).map((img, i) => (
+                          <img
+                            key={i}
+                            src={getImageUrl(img)}
+                            alt={`Product ${i}`}
+                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </Form.Group>
               </Col>
 
@@ -435,32 +485,32 @@ const Products = () => {
                     onChange={handleDescImagesChange}
                   />
                   {editingProduct && editingProduct.description_images && (
-  <div className="mt-2">
-    <small>Current Description Images:</small>
-    <div className="d-flex flex-wrap gap-2 mt-1">
-      {editingProduct.description_images.map((img, i) => (
-        <img
-          key={i}
-          src={getImageUrl(img)}
-          alt={`Desc ${i}`}
-          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
-        />
-      ))}
-    </div>
-  </div>
-)}
+                    <div className="mt-2">
+                      <small>Current Description Images:</small>
+                      <div className="d-flex flex-wrap gap-2 mt-1">
+                        {safeJsonParse(editingProduct.description_images).map((img, i) => (
+                          <img
+                            key={i}
+                            src={getImageUrl(img)}
+                            alt={`Desc ${i}`}
+                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </Form.Group>
               </Col>
             </Row>
 
             <Form.Group className="mb-3">
-              <Form.Label>3D Model (GLB/GLTF)</Form.Label>
+              <Form.Label>3D Model (GLB/GLTF/FBX)</Form.Label>
               <Form.Control
                 type="file"
-                accept=".glb,.gltf"
+                accept=".glb,.gltf,.fbx"
                 onChange={handle3DFileChange}
               />
               {editingProduct && editingProduct.image_3d && (
