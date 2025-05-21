@@ -17,7 +17,7 @@ const Users = () => {
   // Fetch Users
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://api.magnumwonderplast.com/admin_api/users.php");
+      const response = await axios.get("https://api.wonderplastpanel.in/admin_api/users.php");
       if (response.data.success) {
         setUsers(response.data.users);
       }
@@ -35,7 +35,7 @@ const Users = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://api.magnumwonderplast.com/admin_api/users.php", formData);
+      const response = await axios.post("https://api.wonderplastpanel.in/admin_api/users.php", formData);
       if (response.data.success) {
         Swal.fire("Success", response.data.message, "success");
         setShowModal(false);
@@ -61,7 +61,7 @@ const Users = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://api.magnumwonderplast.com/admin_api/users.php?id=${id}`);
+        await axios.delete(`https://api.wonderplastpanel.in/admin_api/users.php?id=${id}`);
         Swal.fire("Deleted!", "User has been deleted.", "success");
         fetchUsers();
       } catch (error) {

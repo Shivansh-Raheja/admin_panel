@@ -16,7 +16,7 @@ const Brochure = () => {
 
     const fetchBrochures = async () => {
         try {
-            const response = await axios.get("http://api.magnumwonderplast.com/admin_api/brochure.php");
+            const response = await axios.get("https://api.wonderplastpanel.in/admin_api/brochure.php");
             if (response.data.success) {
                 setBrochures(response.data.brochures);
             }
@@ -43,10 +43,10 @@ const Brochure = () => {
         try {
             if (editMode) {
                 form.append("id", formData.id);
-                await axios.post("http://api.magnumwonderplast.com/admin_api/brochure.php?_method=PUT", form);
+                await axios.post("https://api.wonderplastpanel.in/admin_api/brochure.php?_method=PUT", form);
                 Swal.fire("Success!", "Brochure updated successfully.", "success");
             } else {
-                await axios.post("http://api.magnumwonderplast.com/admin_api/brochure.php", form);
+                await axios.post("https://api.wonderplastpanel.in/admin_api/brochure.php", form);
                 Swal.fire("Success!", "Brochure added successfully.", "success");
             }
             fetchBrochures();
@@ -75,7 +75,7 @@ const Brochure = () => {
 
         if (confirm.isConfirmed) {
             try {
-                await axios.delete("http://api.magnumwonderplast.com/admin_api/brochure.php", {
+                await axios.delete("https://api.wonderplastpanel.in/admin_api/brochure.php", {
                     data: { id },
                 });
                 Swal.fire("Deleted!", "Brochure has been deleted.", "success");
@@ -117,7 +117,7 @@ const Brochure = () => {
                             <td>{brochure.title}</td>
                             <td>{brochure.type || "N/A"}</td>
                             <td>
-                                <a href={`http://api.magnumwonderplast.com/admin_api/${brochure.file_path}`} target="_blank" rel="noopener noreferrer">
+                                <a href={`https://api.wonderplastpanel.in/admin_api/${brochure.file_path}`} target="_blank" rel="noopener noreferrer">
                                     View File
                                 </a>
                             </td>
