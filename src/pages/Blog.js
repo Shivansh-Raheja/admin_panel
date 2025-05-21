@@ -19,7 +19,7 @@ const Blog = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
 
-  const API_URL = "http://api.magnumwonderplast.com/admin_api/blog.php";
+  const API_URL = "https://api.wonderplastpanel.in/admin_api/blog.php";
 
   // Fetch all blogs
   const fetchBlogs = async () => {
@@ -91,7 +91,7 @@ const Blog = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://api.magnumwonderplast.com/admin_api/blog.php?id=${id}`);
+          await axios.delete(`https://api.wonderplastpanel.in/admin_api/blog.php?id=${id}`);
           Swal.fire("Deleted!", "The blog has been deleted.", "success");
           fetchBlogs();
         } catch (error) {
@@ -166,11 +166,11 @@ const Blog = () => {
                 <td>{blog.title}</td>
                 <td>{blog.author_name}</td>
                 <td>
-                  <img src={`http://api.magnumwonderplast.com/admin_api/${blog.author_image}`} alt="Author" className="small-img" />
+                  <img src={`https://api.wonderplastpanel.in/admin_api/${blog.author_image}`} alt="Author" className="small-img" />
                 </td>
                 <td>{blog.short_description}</td>
                 <td>
-                  <img src={`http://api.magnumwonderplast.com/admin_api/${blog.blog_image}`} alt="Blog" className="small-img" />
+                  <img src={`https://api.wonderplastpanel.in/admin_api/${blog.blog_image}`} alt="Blog" className="small-img" />
                 </td>
                 <td>
                   <Button variant="warning" size="sm" onClick={() => handleShowModal(blog)}>

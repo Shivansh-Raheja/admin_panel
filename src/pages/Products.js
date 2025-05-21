@@ -48,7 +48,7 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://api.magnumwonderplast.com/admin_api/products.php");
+      const response = await axios.get("https://api.wonderplastpanel.in/admin_api/products.php");
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -57,7 +57,7 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://api.magnumwonderplast.com/admin_api/categories.php");
+      const response = await axios.get("https://api.wonderplastpanel.in/admin_api/categories.php");
       if (response.data.success && Array.isArray(response.data.categories)) {
         setCategories(response.data.categories);
       } else {
@@ -179,7 +179,7 @@ const Products = () => {
     }
 
     try {
-      const url = "http://api.magnumwonderplast.com/admin_api/products.php";
+      const url = "https://api.wonderplastpanel.in/admin_api/products.php";
       const config = {
         headers: { "Content-Type": "multipart/form-data" }
       };
@@ -223,7 +223,7 @@ const Products = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete("http://api.magnumwonderplast.com/admin_api/products.php", { 
+          await axios.delete("https://api.wonderplastpanel.in/admin_api/products.php", { 
             data: { id } 
           });
           Swal.fire("Deleted!", "The product has been removed.", "success");
@@ -242,7 +242,7 @@ const Products = () => {
     // Check if imagePath exists and is a string before calling replace
     if (typeof imagePath !== 'string') return '';
     // Normalize path and construct full URL
-    return `http://api.magnumwonderplast.com/admin_api/${imagePath.replace(/\\\//g, '/')}`;
+    return `https://api.wonderplastpanel.in/admin_api/${imagePath.replace(/\\\//g, '/')}`;
   };
 
   return (

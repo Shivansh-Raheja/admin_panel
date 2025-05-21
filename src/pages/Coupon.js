@@ -24,7 +24,7 @@ const Coupons = () => {
 
   const fetchCoupons = async () => {
     try {
-      const response = await axios.get("http://api.magnumwonderplast.com/admin_api/coupon.php");
+      const response = await axios.get("https://api.wonderplastpanel.in/admin_api/coupon.php");
       setCoupons(response.data);
     } catch (error) {
       console.error("Error fetching coupons:", error);
@@ -58,10 +58,10 @@ const Coupons = () => {
   const handleSaveCoupon = async () => {
     try {
       if (formData.id) {
-        await axios.put("http://api.magnumwonderplast.com/admin_api/coupon.php", formData);
+        await axios.put("https://api.wonderplastpanel.in/admin_api/coupon.php", formData);
         Swal.fire("Updated!", "Coupon updated successfully.", "success");
       } else {
-        await axios.post("http://api.magnumwonderplast.com/admin_api/coupon.php", formData);
+        await axios.post("https://api.wonderplastpanel.in/admin_api/coupon.php", formData);
         Swal.fire("Added!", "Coupon added successfully.", "success");
       }
       fetchCoupons();
@@ -82,7 +82,7 @@ const Coupons = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await axios.delete("http://api.magnumwonderplast.com/admin_api/coupon.php", {
+        await axios.delete("https://api.wonderplastpanel.in/admin_api/coupon.php", {
           data: { id },
         });
         fetchCoupons();

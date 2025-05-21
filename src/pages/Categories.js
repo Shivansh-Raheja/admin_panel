@@ -14,7 +14,7 @@ const Categories = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://api.magnumwonderplast.com/admin_api/categories.php");
+      const response = await axios.get("https://api.wonderplastpanel.in/admin_api/categories.php");
       
       if (response.data.success && Array.isArray(response.data.categories)) {
         setCategories(response.data.categories);
@@ -62,10 +62,10 @@ const Categories = () => {
     try {
       if (editMode) {
         formData.append("id", selectedCategory.id);
-        await axios.put("http://api.magnumwonderplast.com/admin_api/categories.php", formData);
+        await axios.put("https://api.wonderplastpanel.in/admin_api/categories.php", formData);
         Swal.fire("Updated!", "Category updated successfully.", "success");
       } else {
-        await axios.post("http://api.magnumwonderplast.com/admin_api/categories.php", formData);
+        await axios.post("https://api.wonderplastpanel.in/admin_api/categories.php", formData);
         Swal.fire("Added!", "Category added successfully.", "success");
       }
       fetchCategories();
@@ -87,7 +87,7 @@ const Categories = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete("http://api.magnumwonderplast.com/admin_api/categories.php", { data: { id } });
+          await axios.delete("https://api.wonderplastpanel.in/admin_api/categories.php", { data: { id } });
           Swal.fire("Deleted!", "Category has been deleted.", "success");
           fetchCategories();
         } catch (error) {
@@ -117,7 +117,7 @@ const Categories = () => {
               <td>{category.id}</td>
               <td>{category.title}</td>
               <td>
-                <img src={`http://api.magnumwonderplast.com/admin_api/${category.image}`} alt="Category" className="category-img" />
+                <img src={`https://api.wonderplastpanel.in/admin_api/${category.image}`} alt="Category" className="category-img" />
               </td>
               <td>
                 <Button variant="warning" onClick={() => handleShow(category)}>Edit</Button>
