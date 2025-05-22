@@ -22,6 +22,7 @@ const Dashboard = () => {
     { name: "Categories", path: "/dashboard/categories", icon: <FaUser /> },
     { name: "Coupons", path: "/dashboard/coupons", icon: <FaUser /> },
     { name: "Banners", path: "/dashboard/banners", icon: <FaUser /> },
+    { name: "Partners", path: "/dashboard/partners", icon: <FaUser /> },
     { name: "Products", path: "/dashboard/products", icon: <FaDatabase /> },
     { name: "Orders", path: "/dashboard/orders", icon: <FaTable /> },
   ];
