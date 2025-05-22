@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Modal, Button, Form, Table, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
-import "./Blog.css"; // Import CSS for styling
+import { Editor } from "@tinymce/tinymce-react";
+import "./Blog.css";
 
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
@@ -18,10 +19,11 @@ const Blog = () => {
     blog_image: null,
   });
   const [isEditing, setIsEditing] = useState(false);
+  const shortDescEditorRef = useRef(null);
+  const descEditorRef = useRef(null);
 
   const API_URL = "https://api.wonderplastpanel.in/admin_api/blog.php";
 
-  // Fetch all blogs
   const fetchBlogs = async () => {
     setLoading(true);
     try {
@@ -31,6 +33,7 @@ const Blog = () => {
       }
     } catch (error) {
       console.error("Error fetching blogs:", error);
+      Swal.fire("Error", "Failed to load blogs", "error");
     }
     setLoading(false);
   };
@@ -39,19 +42,24 @@ const Blog = () => {
     fetchBlogs();
   }, []);
 
-  // Handle form change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle file input change
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     setFormData({ ...formData, [name]: files[0] });
   };
 
-  // Handle form submission (Add or Update)
+  const handleShortDescChange = (content) => {
+    setFormData({ ...formData, short_description: content });
+  };
+
+  const handleDescChange = (content) => {
+    setFormData({ ...formData, description: content });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData();
@@ -66,42 +74,45 @@ const Blog = () => {
     try {
       if (isEditing) {
         form.append("id", formData.id);
-        await axios.post(API_URL + `?id=${formData.id}&_method=PUT`, form);
-        Swal.fire("Success", "Blog updated!", "success");
+        await axios.put(`${API_URL}?id=${formData.id}`, form, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        Swal.fire("Success", "Blog updated successfully!", "success");
       } else {
-        await axios.post(API_URL, form);
-        Swal.fire("Success", "Blog added!", "success");
+        await axios.post(API_URL, form, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        Swal.fire("Success", "Blog added successfully!", "success");
       }
       fetchBlogs();
       handleCloseModal();
     } catch (error) {
-      Swal.fire("Error", "Something went wrong", "error");
+      console.error("Error submitting blog:", error);
+      Swal.fire("Error", "Failed to submit blog", "error");
     }
   };
 
-  // Handle delete
   const handleDelete = async (id) => {
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "This action cannot be undone!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await axios.delete(`https://api.wonderplastpanel.in/admin_api/blog.php?id=${id}`);
-          Swal.fire("Deleted!", "The blog has been deleted.", "success");
-          fetchBlogs();
-        } catch (error) {
-          Swal.fire("Error", "Failed to delete blog", "error");
-        }
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${API_URL}?id=${id}`);
+        Swal.fire("Deleted!", "The blog has been deleted.", "success");
+        fetchBlogs();
+      } catch (error) {
+        Swal.fire("Error", "Failed to delete blog", "error");
+      }
+    }
   };
 
-  // Open modal for adding/updating blog
   const handleShowModal = (blog = null) => {
     if (blog) {
       setFormData({
@@ -129,7 +140,6 @@ const Blog = () => {
     setShowModal(true);
   };
 
-  // Close modal
   const handleCloseModal = () => {
     setShowModal(false);
   };
@@ -166,17 +176,35 @@ const Blog = () => {
                 <td>{blog.title}</td>
                 <td>{blog.author_name}</td>
                 <td>
-                  <img src={`https://api.wonderplastpanel.in/admin_api/${blog.author_image}`} alt="Author" className="small-img" />
+                  <img 
+                    src={`https://api.wonderplastpanel.in/admin_api/${blog.author_image}`} 
+                    alt="Author" 
+                    className="small-img" 
+                  />
                 </td>
-                <td>{blog.short_description}</td>
                 <td>
-                  <img src={`https://api.wonderplastpanel.in/admin_api/${blog.blog_image}`} alt="Blog" className="small-img" />
+                  <div dangerouslySetInnerHTML={{ __html: blog.short_description }} />
                 </td>
                 <td>
-                  <Button variant="warning" size="sm" onClick={() => handleShowModal(blog)}>
+                  <img 
+                    src={`https://api.wonderplastpanel.in/admin_api/${blog.blog_image}`} 
+                    alt="Blog" 
+                    className="small-img" 
+                  />
+                </td>
+                <td>
+                  <Button 
+                    variant="warning" 
+                    size="sm" 
+                    onClick={() => handleShowModal(blog)}
+                  >
                     Edit
                   </Button>{" "}
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(blog.id)}>
+                  <Button 
+                    variant="danger" 
+                    size="sm" 
+                    onClick={() => handleDelete(blog.id)}
+                  >
                     Delete
                   </Button>
                 </td>
@@ -186,37 +214,104 @@ const Blog = () => {
         </Table>
       )}
 
-      {/* Add/Edit Blog Modal */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{isEditing ? "Edit Blog" : "Add Blog"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Title</Form.Label>
-              <Form.Control type="text" name="title" value={formData.title} onChange={handleChange} required />
+              <Form.Control 
+                type="text" 
+                name="title" 
+                value={formData.title} 
+                onChange={handleChange} 
+                required 
+              />
             </Form.Group>
-            <Form.Group>
+            
+            <Form.Group className="mb-3">
               <Form.Label>Author Name</Form.Label>
-              <Form.Control type="text" name="author_name" value={formData.author_name} onChange={handleChange} required />
+              <Form.Control 
+                type="text" 
+                name="author_name" 
+                value={formData.author_name} 
+                onChange={handleChange} 
+                required 
+              />
             </Form.Group>
-            <Form.Group>
+            
+            <Form.Group className="mb-3">
               <Form.Label>Author Image</Form.Label>
-              <Form.Control type="file" name="author_image" onChange={handleFileChange} />
+              <Form.Control 
+                type="file" 
+                name="author_image" 
+                onChange={handleFileChange} 
+                accept="image/*"
+              />
+              {isEditing && (
+                <Form.Text className="text-muted">
+                  Leave empty to keep current image
+                </Form.Text>
+              )}
             </Form.Group>
-            <Form.Group>
+            
+            <Form.Group className="mb-3">
               <Form.Label>Short Description</Form.Label>
-              <Form.Control as="textarea" name="short_description" value={formData.short_description} onChange={handleChange} required />
+              <Editor
+                apiKey="pz7fiqk1a3u0cmmz1vg9i8y10sf0t954opjyit1dkzr41j0w" // Replace with your actual API key
+                onInit={(evt, editor) => shortDescEditorRef.current = editor}
+                value={formData.short_description}
+                onEditorChange={handleShortDescChange}
+                init={{
+                  height: 200,
+                  menubar: false,
+                  plugins: [
+                    'advlist autolink lists link image charmap preview anchor pagebreak'
+                  ],
+                  toolbar_mode: 'floating',
+        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+                  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                }}
+              />
             </Form.Group>
-            <Form.Group>
+            
+            <Form.Group className="mb-3">
               <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" name="description" value={formData.description} onChange={handleChange} required />
+              <Editor
+                apiKey="pz7fiqk1a3u0cmmz1vg9i8y10sf0t954opjyit1dkzr41j0w" // Replace with your actual API key
+                onInit={(evt, editor) => descEditorRef.current = editor}
+                value={formData.description}
+                onEditorChange={handleDescChange}
+                init={{
+                  height: 300,
+                  menubar: true,
+                  plugins: [
+                    'advlist autolink lists link image charmap preview anchor pagebreak'
+                  ],
+                  toolbar_mode: 'floating',
+        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+                  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                }}
+              />
             </Form.Group>
-            <Form.Group>
+            
+            <Form.Group className="mb-3">
               <Form.Label>Blog Image</Form.Label>
-              <Form.Control type="file" name="blog_image" onChange={handleFileChange} />
+              <Form.Control 
+                type="file" 
+                name="blog_image" 
+                onChange={handleFileChange} 
+                accept="image/*"
+              />
+              {isEditing && (
+                <Form.Text className="text-muted">
+                  Leave empty to keep current image
+                </Form.Text>
+              )}
             </Form.Group>
+            
             <Button variant="primary" type="submit" className="mt-3">
               {isEditing ? "Update Blog" : "Add Blog"}
             </Button>
