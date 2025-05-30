@@ -51,25 +51,21 @@ const handleSubmit = async (e) => {
     const formDataToSend = new FormData();
     formDataToSend.append("title", formData.title);
     formDataToSend.append("visible_status", formData.visible_status);
-    
     if (formData.image) {
       formDataToSend.append("image", formData.image);
     }
 
     if (editing) {
       formDataToSend.append("id", formData.id);
-      await axios.put("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      await axios({
+        method: 'put',
+        url: "https://api.wonderplastpanel.in/admin_api/partners.php",
+        data: formDataToSend,
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       Swal.fire("Updated!", "Partner updated successfully.", "success");
     } else {
-      await axios.post("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await axios.post("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend);
       Swal.fire("Added!", "Partner added successfully.", "success");
     }
     
