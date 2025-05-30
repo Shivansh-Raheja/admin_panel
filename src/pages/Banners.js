@@ -45,7 +45,7 @@ const Banners = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
@@ -57,20 +57,22 @@ const Banners = () => {
 
       if (editing) {
         formDataToSend.append("id", formData.id);
-        await axios.put("https://api.wonderplastpanel.in/admin_api/banners.php", formDataToSend);
-        Swal.fire("Updated!", "Banner updated successfully.", "success");
+        formDataToSend.append("_method", "PUT"); // add this line
+await axios.post("https://api.wonderplastpanel.in/admin_api/banners.php", formDataToSend);
+        Swal.fire("Updated!", "partners updated successfully.", "success");
       } else {
         await axios.post("https://api.wonderplastpanel.in/admin_api/banners.php", formDataToSend);
-        Swal.fire("Added!", "Banner added successfully.", "success");
+        Swal.fire("Added!", "partners added successfully.", "success");
       }
       
       fetchBanners();
       handleClose();
     } catch (error) {
-      console.error("Error saving banner:", error);
+      console.error("Error saving Banners:", error);
       Swal.fire("Error!", "Something went wrong.", "error");
     }
   };
+
 
   const handleEdit = (banner) => {
     setFormData({ ...banner, image: null });
