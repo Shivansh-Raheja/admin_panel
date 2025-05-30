@@ -45,36 +45,31 @@ const Partners = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const formDataToSend = new FormData();
     formDataToSend.append("title", formData.title);
     formDataToSend.append("visible_status", formData.visible_status);
     
+    if (formData.image) {
+      formDataToSend.append("image", formData.image);
+    }
+
     if (editing) {
       formDataToSend.append("id", formData.id);
-      // Only append image if a new one was selected
-      if (formData.image) {
-        formDataToSend.append("image", formData.image);
-      }
-      
-      // Set proper headers for file upload
-      const config = {
+      await axios.put("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
-      };
-      
-      await axios.put("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend, config);
+      });
       Swal.fire("Updated!", "Partner updated successfully.", "success");
     } else {
-      if (!formData.image) {
-        Swal.fire("Error!", "Please select an image.", "error");
-        return;
-      }
-      formDataToSend.append("image", formData.image);
-      await axios.post("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend);
+      await axios.post("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       Swal.fire("Added!", "Partner added successfully.", "success");
     }
     
@@ -82,7 +77,7 @@ const Partners = () => {
     handleClose();
   } catch (error) {
     console.error("Error saving partner:", error);
-    Swal.fire("Error!", error.response?.data?.error || "Something went wrong.", "error");
+    Swal.fire("Error!", "Something went wrong.", "error");
   }
 };
 
