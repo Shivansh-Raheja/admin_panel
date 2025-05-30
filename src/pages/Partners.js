@@ -46,31 +46,45 @@ const Partners = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("visible_status", formData.visible_status);
+  e.preventDefault();
+  try {
+    const formDataToSend = new FormData();
+    formDataToSend.append("title", formData.title);
+    formDataToSend.append("visible_status", formData.visible_status);
+    
+    if (editing) {
+      formDataToSend.append("id", formData.id);
+      // Only append image if a new one was selected
       if (formData.image) {
         formDataToSend.append("image", formData.image);
       }
-
-      if (editing) {
-        formDataToSend.append("id", formData.id);
-        await axios.put("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend);
-        Swal.fire("Updated!", "partners updated successfully.", "success");
-      } else {
-        await axios.post("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend);
-        Swal.fire("Added!", "partners added successfully.", "success");
-      }
       
-      fetchpartners();
-      handleClose();
-    } catch (error) {
-      console.error("Error saving partners:", error);
-      Swal.fire("Error!", "Something went wrong.", "error");
+      // Set proper headers for file upload
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      
+      await axios.put("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend, config);
+      Swal.fire("Updated!", "Partner updated successfully.", "success");
+    } else {
+      if (!formData.image) {
+        Swal.fire("Error!", "Please select an image.", "error");
+        return;
+      }
+      formDataToSend.append("image", formData.image);
+      await axios.post("https://api.wonderplastpanel.in/admin_api/partners.php", formDataToSend);
+      Swal.fire("Added!", "Partner added successfully.", "success");
     }
-  };
+    
+    fetchpartners();
+    handleClose();
+  } catch (error) {
+    console.error("Error saving partner:", error);
+    Swal.fire("Error!", error.response?.data?.error || "Something went wrong.", "error");
+  }
+};
 
   const handleEdit = (partner) => {
     setFormData({ ...partner, image: null });
