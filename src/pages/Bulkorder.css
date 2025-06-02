@@ -1,0 +1,49 @@
+.orders-container {
+  padding: 20px;
+}
+
+.orders-container h2 {
+  margin-bottom: 20px;
+}
+
+.order-product-list {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.status-processed {
+  background-color: #0dcaf0;
+  color: #000;
+}
+
+.status-completed {
+  background-color: #198754;
+  color: #fff;
+}
+
+.status-rejected {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* Responsive table adjustments */
+@media (max-width: 768px) {
+  .table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

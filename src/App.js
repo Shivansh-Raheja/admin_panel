@@ -11,6 +11,7 @@ import Coupons from "./pages/Coupon";
 import Banners from "./pages/Banners";
 import Products from "./pages/Products";
 import Partners from "./pages/Partners";
+import OrderRequests from "./pages/Bulkorder";
 
 const ProtectedRoute = ({ element }) => {
   return localStorage.getItem("adminToken") ? element : <Navigate to="/" />;
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="banners" element={<Banners />} />
           <Route path="partners" element={<Partners />} />
           <Route path="products" element={<Products />} />
+          <Route path="bulkorders" element={<OrderRequests />} />
           {/* Add more nested routes here */}
         </Route>
       </Routes>

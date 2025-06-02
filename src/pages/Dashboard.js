@@ -24,6 +24,7 @@ const Dashboard = () => {
     { name: "Banners", path: "/dashboard/banners", icon: <FaUser /> },
     { name: "Partners", path: "/dashboard/partners", icon: <FaUser /> },
     { name: "Products", path: "/dashboard/products", icon: <FaDatabase /> },
+    { name: "Bulk Orders", path: "/dashboard/bulkorders", icon: <FaTable /> },
     { name: "Orders", path: "/dashboard/orders", icon: <FaTable /> },
   ];
 
