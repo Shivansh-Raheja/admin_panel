@@ -163,15 +163,17 @@ const OrderManagement = () => {
                   </td>
                   <td className="text-nowrap">{formatCurrency(order.summary.total)}</td>
                   <td>
-                    <Badge bg={order.payment.method === 'cod' ? 'secondary' : 'success'}>
+                    <Badge bg={order.payment_method === 'cod' ? 'secondary' : 'success'}>
                       {order.payment.method.toUpperCase()}
                     </Badge>
                     <div className="small">
                       {order.payment.status === 'paid' ? (
-                        <span className="text-success">Paid</span>
-                      ) : (
-                        <span className="text-warning">Pending</span>
-                      )}
+                    <span className="text-success">Paid</span>
+                    ) : order.payment.status === 'failed' ? (
+                    <span className="text-danger">Failed</span>
+                    ) : (
+                    <span className="text-warning">Pending</span>
+                    )}
                     </div>
                   </td>
                   <td>
