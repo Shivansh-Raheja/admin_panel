@@ -13,6 +13,7 @@ import Products from "./pages/Products";
 import Partners from "./pages/Partners";
 import OrderRequests from "./pages/Bulkorder";
 import OrderManagement from "./pages/Orders";
+import SiteBanners from "./pages/SiteBanners";
 
 const ProtectedRoute = ({ element }) => {
   return localStorage.getItem("adminToken") ? element : <Navigate to="/" />;
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />}>
           <Route path="users" element={<Users />} />
+          <Route path="head-banners" element={<SiteBanners />} />
           <Route path="reviews" element={<Reviews />} />
           <Route path="brochure" element={<Brochure />} />
           <Route path="blog" element={<Blog />} />

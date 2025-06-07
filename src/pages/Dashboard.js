@@ -30,6 +30,7 @@ const Dashboard = () => {
   // Sidebar menu items
   const menuItems = [
   { name: "Users", path: "/dashboard/users", icon: <FaUser /> },
+  { name: "Head Banners", path: "/dashboard/head-banners", icon: <FaTags /> },
   { name: "Reviews", path: "/dashboard/reviews", icon: <FaStar /> },
   { name: "Brochure", path: "/dashboard/brochure", icon: <FaFileAlt /> },
   { name: "Blogs", path: "/dashboard/blog", icon: <FaBlog /> },
